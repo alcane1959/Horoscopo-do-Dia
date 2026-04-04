@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Tratado de Infortúnios Astrais | Prof. Karma Juros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #fdfcf9; --paper: #ffffff; --ink: #1a1a1a; --wine: #600000; --border: #c4b49d; }
+        body { font-family: 'Lora', serif; background-color: var(--bg); color: var(--ink); padding: 40px; line-height: 1.8; display: flex; flex-direction: column; align-items: center; zoom: 100%; }
+        .documento { background: var(--paper); width: 100%; max-width: 1000px; padding: 60px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        header { text-align: center; border-bottom: 3px double var(--wine); margin-bottom: 40px; padding-bottom: 20px; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--wine); font-size: 2.5rem; text-transform: uppercase; margin: 0; }
+        .controles { margin-bottom: 40px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        select, button { padding: 15px 25px; font-family: 'Lora', serif; font-size: 1.1rem; border: 1px solid var(--border); background: white; }
+        button { background: var(--wine); color: white; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.4s; }
+        button:hover { background: #000; color: #fff; }
+        #resultado { display: none; animation: fadeIn 1s ease; margin-top: 30px; }
+        .signo-label { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--wine); margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .texto-principal { font-size: 1.25rem; text-align: justify; white-space: pre-line; color: #222; margin-bottom: 40px; }
+        .aviso-caixa { background: #fdf2f2; border-left: 5px solid var(--wine); padding: 25px; font-weight: 700; color: var(--wine); font-size: 1.1rem; }
+        footer { margin-top: 60px; font-size: 0.9rem; color: #aaa; text-align: center; border-top: 1px solid #eee; padding-top: 20px; width: 100%; }
+        .toast { position: fixed; bottom: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="documento">
+    <header>
+        <h1>Relatório Geral de Decadência Astral</h1>
+        <p>Análise de Probabilidades e Sarcasmo Sistêmico</p>
+    </header>
+
+    <div class="controles">
+        <select id="signo">
+            <option value="♈">Áries</option><option value="♉">Touro</option><option value="♊">Gêmeos</option>
+            <option value="♋">Câncer</option><option value="♌">Leão</option><option value="♍">Virgem</option>
+            <option value="♎">Libra</option><option value="♏">Escorpião</option><option value="♐">Sagitário</option>
+            <option value="♑">Capricórnio</option><option value="♒">Aquário</option><option value="♓">Peixes</option>
+        </select>
+        <button onclick="comutarDestino()">Comutar Destino</button>
+    </div>
+
+    <div id="resultado">
+        <div id="out-titulo" class="signo-label"></div>
+        <div id="out-corpo" class="texto-principal"></div>
+        <div id="out-aviso" class="aviso-caixa"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast">Copiado para o clipboard!</div>
+
+<footer>
+    ELABORADO POR PROFESSOR KARMA JURUS • 2026 • TODOS OS ERROS RESERVADOS
+</footer>
+
+<script>
+    const db = {
+        intros: [
+            "Ao analisarmos a configuração dos astros, fica claro que o universo usa sua existência como um experimento de resistência ao fracasso continuado.",
+            "Observando a quadratura de Saturno com sua falta de bom senso, sua paciência será testada até o limite da sanidade por eventos medíocres.",
+            "As estrelas foram consultadas e a resposta foi um silêncio constrangedor, seguido por uma gargalhada cósmica de deboche sobre seus planos.",
+            "É admirável como você mantém a postura enquanto seu carma pessoal vale menos que um cupom de desconto vencido de uma loja falida.",
+            "Seu ascendente em teimosia está tão forte que você convenceria uma estátua a se mudar, mas não decide a cor da própria meia sem ajuda.",
+            "O universo não está conspirando contra você; ele está apenas te ignorando com um estilo refinado, cruel e extremamente profissional.",
+            "Sua energia espiritual hoje se assemelha a um modem discado tentando baixar um arquivo pesado em plena tempestade solar de domingo.",
+            "A leitura do seu mapa astral sugere que você foi escalado como figurante em uma comédia trágica onde ninguém teve a decência de te dar o roteiro.",
+            "Seus chakras estão tão desalinhados que parecem uma fila de banco em dia de pagamento: confusos, lentos, irritados e sem previsão de saída.",
+            "A luz no fim do túnel que você vê não é a prosperidade batendo à porta, é apenas o farol do trem dos boletos vindo na sua direção com pressa.",
+            "Sua aura tem a cor exata de um café requentado há três dias: sem vida, amarga e com um gosto residual de arrependimento profundo e denso.",
+            "Consultar o oráculo para sua vida hoje é como tentar ler um manual de instruções em mandarim enquanto se está vendado em um incêndio.",
+            "Os astros indicam que sua sorte foi enviada por uma transportadora que faliu e o código de rastreio nunca mais será atualizado nesta vida.",
+            "Sua vibração atual é tão baixa que se você fosse um telefone celular, estaria permanentemente no modo de economia de bateria e sem sinal.",
+            "O cosmos cansou de te enviar sinais sutis e agora resolveu usar um megafone intergaláctico para anunciar suas trapalhadas existenciais ao mundo.",
+            "Seu destino foi escrito em um guardanapo usado de boteco por um estagiário de anjo da guarda que claramente odeia o cargo que ocupa.",
+            "A harmonia do seu mapa astral foi substituída por um erro 404 persistente que nem o suporte técnico do além tem interesse em resolver.",
+            "O alinhamento planetário sugere que até sua própria sombra está pensando em pedir as contas e te deixar sozinho para não passar vergonha.",
+            "Sua estrela guia entrou em curto-circuito e agora está apenas piscando um sinal de socorro em código Morse para as outras galáxias rirem.",
+            "O vácuo existencial que você sente é, na verdade, o universo tentando aspirar suas más decisões para reciclar em algo menos decepcionante.",
+            "Seu mapa hoje parece um código mal compilado, cheio de bugs que nem a inteligência artificial mais avançada ousaria tentar corrigir.",
+            "A movimentação de Marte indica que sua agressividade hoje será tão eficaz quanto um canivete de plástico tentando cortar granito bruto.",
+            "Vênus se afastou de você com a mesma velocidade que um herdeiro foge de uma dívida de condomínio acumulada por dez anos.",
+            "Sua configuração astral lembra um computador que travou na tela azul bem no meio de uma apresentação para o conselho diretor.",
+            "O universo te deu as ferramentas para vencer, mas esqueceu de mencionar que elas vieram sem pilhas e com o manual em aramaico antigo.",
+            "Sua sorte hoje é como um fósforo riscado no meio de um furacão: um brilho pífio seguido por um escuro absoluto e cheiro de enxofre.",
+            "A influência lunar hoje favorece o crescimento de pêlos encravados, boletos atrasados e uma melancolia digna de ópera de quinta categoria.",
+            "Os deuses do destino estão jogando dados com sua vida, mas parece que eles só usam dados viciados para garantir que você perca feio.",
+            "Sua conexão com o sucesso hoje é comparável a tentar captar sinal de Wi-Fi no centro de uma caverna de chumbo a quilômetros de profundidade.",
+            "O cosmos identificou um conflito de interesse entre o que você deseja e o que você realmente merece, e o veredito não foi a seu favor.",
+            "Seu carma está sendo processado por um servidor movido a manivela, o que explica por que suas preces nunca chegam ao destino final.",
+            "A leitura das casas astrais sugere que você deveria ter ficado na cama, coberto por um lençol de indiferença e protegido do mundo.",
+            "Sua energia vital hoje brilha com a intensidade de um vaga-lume com anemia tentando atravessar uma névoa de poluição industrial.",
+            "O alinhamento dos planetas hoje sugere que até o seu reflexo no espelho vai evitar olhar para você para não se sentir deprimido.",
+            "Seu destino foi traçado por um estagiário de anjo da guarda que claramente faltou em todas as aulas de planejamento e ética cósmica.",
+            "Consultar o mapa astral para seu dia hoje é como procurar um endereço em um mapa de 1800 enquanto dirige um carro de fórmula um.",
+            "Sua aura hoje tem a densidade e o frescor de um purê de batatas esquecido no micro-ondas por tempo demais e sem qualquer tempero.",
+            "O universo hoje te trata como um anexo de e-mail suspeito: ninguém quer abrir, ninguém quer ver e todos querem deletar imediatamente.",
+            "Sua sorte hoje está em manutenção preventiva, e o técnico avisou que a peça de reposição está em falta no estoque do sistema solar.",
+            "Os astros indicam que sua melhor contribuição para a humanidade hoje seria permanecer em silêncio absoluto e em posição fetal no sofá.",
+            "Seu horóscopo hoje é patrocinado pela lei de Murphy, que resolveu usar o seu nome em todos os exemplos de desastres iminentes e chatos.",
+            "Sua vibração atual atrai apenas aparelhos eletrônicos que param de funcionar e pessoas que querem te vender cursos de autoajuda baratos.",
+            "O destino hoje te olha com a mesma expressão de desprezo que um porteiro olha para quem esqueceu a chave pela quinta vez na semana.",
+            "A configuração planetária sugere que você é o alvo oficial do deboche galáctico por ter acreditado que hoje as coisas seriam diferentes.",
+            "Sua luz interior hoje é apenas o reflexo do seu celular indicando que a bateria está em 2% e o carregador sumiu misteriosamente da casa.",
+            "O vácuo que você sente não é espiritual; é apenas a ausência de qualquer plano coerente para as próximas vinte e quatro horas de tédio.",
+            "O universo te colocou na lista de espera para o sucesso, mas avisou que a fila não anda desde o início do século passado por burocracia.",
+            "Sua estrela-guia hoje entrou em curto e está enviando sinais contraditórios que farão você dar voltas inúteis em torno de si mesmo hoje.",
+            "O cosmos decidiu que sua dose de realidade hoje será servida pura, sem gelo e com um gosto residual de arrependimento profundo e denso.",
+            "Sua trajetória astral lembra a de um robô aspirador que ficou preso em um canto da sala e está batendo na mesma parede infinitamente.",
+            "Os planetas se alinharam para te dizer que seu 'grande momento' foi ontem, enquanto você estava ocupado discutindo bobagens no WhatsApp.",
+            "Sua aura hoje reflete o cansaço de quem está tentando carregar um balde furado em direção a um incêndio que nem é da sua conta direta.",
+            "O destino hoje te trata como um boleto registrado: ele vai te achar, não importa o quanto você tente se esconder ou fingir demência.",
+            "Sua sorte hoje é como um bilhete de loteria premiado que foi lavado dentro do bolso da calça e agora é apenas uma massa de papel sujo.",
+            "A leitura do seu carma sugere que você deve ter sido um pirata muito cruel em outra vida para merecer essa sequência de dias pífios.",
+            "O universo hoje te desafia a manter a dignidade enquanto você corre atrás de um ônibus que claramente não vai parar para você entrar.",
+            "Sua energia hoje é ideal para atrair multas, taxas bancárias inesperadas e olhares de reprovação de pessoas que você nem conhece de fato.",
+            "Os astros indicam que sua paciência será moída por uma sucessão de áudios de cinco minutos sobre assuntos que não te interessam nem um pouco.",
+            "Sua vida hoje parece um filme que foi dublado em outra língua e o áudio está com três segundos de atraso em relação à imagem real.",
+            "O cosmos mandou avisar que suas preces foram recebidas, lidas e arquivadas na pasta de 'assuntos sem importância' para a eternidade astral.",
+            "Sua trajetória hoje lembra a de uma barata tonta tentando encontrar a saída de uma cozinha iluminada e cheia de chinelos agressivos.",
+            "Sua sorte hoje é como um wi-fi gratuito que pede todos os seus dados e depois diz que a conexão falhou por tempo excedido de espera.",
+            "Você hoje tem o carisma de um despertador tocando às 4 da manhã em um feriado prolongado que você planejava dormir até o meio-dia.",
+            "Sua capacidade de foco hoje é a de um esquilo em uma fábrica de nozes que acabou de ser invadida por dez cães famintos e barulhentos.",
+            "O destino hoje te trata como um termo de uso de software: longo, chato, confuso e que todos aceitam sem ler apenas para acabar logo.",
+            "Sua sorte hoje é como um fósforo que apaga antes de acender a vela durante um apagão geral que vai durar a noite toda na sua rua.",
+            "Os planetas indicam que sua teimosia hoje vai te fazer errar o caminho do banheiro na sua própria casa apenas para provar que está certo.",
+            "Sua aura hoje tem a cor de um céu de segunda-feira nublada em uma cidade industrial cinzenta, barulhenta e extremamente poluída de tudo.",
+            "O universo hoje te desafia a não dizer nenhum palavrão, sabendo que vai colocar um móvel pontiagudo no caminho do seu dedinho do pé.",
+            "Sua trajetória hoje lembra a de uma folha seca sendo levada por um exaustor de fábrica: você vai para onde o vento mais forte soprar.",
+            "Sua sorte hoje é como um café expresso que veio com açúcar mesmo você tendo pedido amargo: um erro pequeno que estraga toda a experiência.",
+            "Você hoje é o protagonista de um conto de fadas onde o dragão vence, a princesa é fofoqueira e o herói acaba trabalhando em um cartório.",
+            "Sua capacidade de concentração hoje é a de uma criança em uma loja de brinquedos que acabou de ganhar um apito e quer testar agora.",
+            "O cosmos mandou dizer que sua sorte está logo ali na frente, mas infelizmente você está caminhando na direção oposta por pura teimosia.",
+            "Sua vida hoje parece um exame de sangue feito em jejum por doze horas: você está fraco, irritado e alguém ainda vai te espetar logo.",
+            "Sua energia hoje é perfeita para atrair aparelhos domésticos que decidem vazar água justamente quando você vai sair de casa com pressa.",
+            "O destino hoje te trata como um anúncio de vídeo que não dá para pular: você é obrigado a passar por isso até o final da propaganda.",
+            "Sua sorte hoje é como um par de sapatos novos que causa bolhas enormes nos dois pés logo nos primeiros dez metros de caminhada lenta.",
+            "Os planetas indicam que sua paciência hoje será consumida por alguém tentando te explicar algo que você já sabe há mais de vinte anos.",
+            "Sua aura hoje tem o peso de uma dívida de jogo que você não lembra de ter feito mas que o cobrador astral não esquece por nada.",
+            "O universo hoje te colocou no 'banco de reservas' das boas notícias e na 'primeira fila' dos imprevistos domésticos chatos e caros.",
+            "Sua trajetória hoje lembra a de uma bola de pingue-pongue em uma partida profissional: você só leva pancada de todos os lados possíveis.",
+            "Sua sorte hoje é como um controle remoto que só funciona se você apertar o botão com tanta força que quase quebra o dedo de dor.",
+            "Você hoje tem a paciência de quem está há quarenta minutos esperando para ser atendido por um robô que não entende o que é humano.",
+            "Sua capacidade de planejamento hoje é a de quem constrói uma barca dentro de um porão sem ter uma porta grande o suficiente para sair.",
+            "O cosmos mandou avisar que seu 'carma positivo' está preso na alfândega por falta de documentos que comprovem sua real boa vontade.",
+            "Sua vida hoje parece uma comédia de erros onde o diretor esqueceu que o gênero deveria ser comédia e virou um drama pesado e denso.",
+            "Sua energia hoje atrai apenas vizinhos fofoqueiros que querem saber por que você está com essa cara de quem comeu e não gostou nada.",
+            "O destino hoje te trata como um pneu de estepe: só lembram que você existe quando algo muito errado aconteceu no meio do caminho.",
+            "Sua sorte hoje é como um banho quente que acaba no meio porque alguém ligou a torneira da cozinha e a pressão do chuveiro caiu.",
+            "Os astros sugerem que seu 'sexto sentido' hoje está mais para um 'senso de ridículo' que vai te avisar tarde demais das bobagens.",
+            "Sua aura hoje brilha com a intensidade de uma lâmpada de geladeira que fica acesa o tempo todo e ninguém sabe o porquê da falha.",
+            "O universo hoje te desafia a ser gentil enquanto uma criança grita no seu ouvido e o seu café cai na sua calça nova e clara.",
+            "Sua trajetória hoje lembra a de um dardo lançado por alguém que nunca jogou: você pode atingir qualquer coisa, menos o alvo central.",
+            "Sua sorte hoje é como um biscoito da sorte que vem com o papel em branco, te deixando na dúvida se o futuro é nulo ou apenas ruim.",
+            "Você hoje é a prova de que a teimosia pode te levar a lugares incríveis, como por exemplo, o meio de um congestionamento sem saída.",
+            "Sua capacidade de ouvir hoje está afetada por um ruído mental constante de boletos vencendo e prazos que você não vai cumprir hoje.",
+            "O cosmos mandou dizer que sua estrela está brilhando muito, mas infelizmente é em outra galáxia e para outra pessoa muito mais esperta.",
+            "Sua vida hoje parece um daqueles sonhos onde você quer correr mas suas pernas pesam mil quilos e o perseguidor está rindo de você.",
+            "Sua energia hoje é perfeita para quebrar coisas caras apenas encostando nelas com um pouco mais de pressa ou descuido injustificável."
+        ],
+        desenvolvimentos: [
+            "No campo das interações sociais, você receberá um áudio de cinco minutos no exato momento em que sua bateria estiver em 1% e sem carregador por perto.",
+            "O cotidiano será um labirinto de micro-agressões, culminando no envio de um print reclamando do chefe exatamente para o grupo onde ele é o dono e administrador supremo.",
+            "Sua vida financeira atingirá um estado de poesia trágica quando seu cartão for recusado por falta de centavos na frente de uma fila impaciente, barulhenta e hostil.",
+            "Prepare-se para o erro de sistema clássico: o Windows atualizará no instante em que você terminar um documento crucial que esqueceu de salvar por pura pressa imbecil.",
+            "O destino te colocará cara a cara com seu passado vergonhoso no supermercado, enquanto você segura o papel higiênico mais barato e de marca duvidosa da prateleira baixa.",
+            "Sua tentativa de ser produtivo hoje será interrompida por uma mosca insistente que parece ter sido contratada pelo seu carma para te enlouquecer de vez na frente de todos.",
+            "Você passará o dia em uma reunião que claramente poderia ter sido um e-mail de duas linhas, sentindo sua alma ser sugada por planilhas vazias e sem sentido real ou prático.",
+            "A sorte te dará um 'match' perfeito seguido de um 'unmatch' imediato, apenas para garantir que você não esqueça o seu lugar de insignificância total neste mundo vasto.",
+            "Sua conexão com a internet cairá justamente quando você estiver prestes a concluir a única tarefa realmente importante do seu mês de trabalho intenso, chato e cansativo.",
+            "Um parente distante ligará pedindo dinheiro emprestado, ignorando o fato óbvio de que você está almoçando pão com ovo há três dias seguidos por falta de verba básica.",
+            "Você vai comprar um guarda-chuva caro e o sol brilhará por um mês; no dia em que esquecê-lo no ônibus, virá o dilúvio universal sobre a sua cabeça seca e indefesa.",
+            "Sua entrega de comida favorita chegará fria, com o pedido trocado e o entregador ainda vai te dar uma lição de moral gratuita sobre a vida, a paciência e a gratidão.",
+            "O aplicativo do banco entrará em manutenção exatamente na hora em que você precisar provar para alguém que não é um caloteiro contumaz e sem palavra alguma de honra.",
+            "Você terá uma ideia brilhante durante o banho, mas ela desaparecerá da sua mente assim que você encostar a toalha no rosto para se secar de forma rápida e bruta hoje.",
+            "Sua roupa favorita vai encolher na lavagem, enquanto aquela que você odeia continuará intacta e ocupando espaço precioso no seu armário de roupas velhas e feias de sempre.",
+            "O GPS te levará para uma rua sem saída em um bairro estranho onde o único morador é um cachorro que late para a sua total falta de sorte, de rumo e de inteligência.",
+            "Você tentará fazer um elogio sincero e ele soará como uma ofensa gravíssima, gerando um silêncio constrangedor de dez minutos na sala toda cheia de gente olhando para você.",
+            "A impressora vai travar na última página do seu relatório, e o cartucho de tinta vai explodir sujando sua única camisa branca limpa disponível para a reunião de logo mais.",
+            "Seu vizinho começará uma obra com britadeira industrial às 7h da manhã do seu único dia de folga conquistado nos últimos dois anos de muita luta, suor e trabalho duro.",
+            "Você encontrará uma promoção imperdível de algo que você comprou ontem pelo triplo do preço, sem direito a troca ou reembolso algum por parte da loja chata e gananciosa.",
+            "A tampa da caneta vai estourar no bolso da sua calça jeans favorita, criando uma mancha azul permanente que se assemelha a um teste de Rorschach sobre o seu fracasso.",
+            "Ao tentar abrir uma lata de conserva, o anel vai quebrar e você passará meia hora tentando usar uma faca de ponta, apenas para acabar com um corte no dedo e fome.",
+            "Você receberá um 'olá, sumido' de alguém que você deve dinheiro, e a conversa vai evoluir rapidamente para uma cobrança judicial passivo-agressiva e muito chata.",
+            "Sua conexão Bluetooth vai falhar e o áudio vergonhoso que você estava ouvindo passará a tocar no volume máximo pelos alto-falantes do ônibus lotado de idosos.",
+            "Um pássaro com problemas intestinais escolherá exatamente o seu ombro como alvo no momento em que você estiver entrando em uma entrevista de emprego muito importante.",
+            "Você vai digitar um comentário ácido em uma rede social e perceberá, tarde demais, que postou na sua própria conta profissional vinculada ao LinkedIn da empresa.",
+            "Ao tentar tirar uma selfie 'espontânea', seu celular vai escorregar da mão e cair dentro de um bueiro, enquanto você vê sua vida digital afundar no esgoto da cidade.",
+            "Sua cafeteira vai queimar justamente no dia em que você acordou com a pior dor de cabeça da década e a padaria da esquina decidiu fechar para luto e reforma.",
+            "Você vai comprar um bilhete de metrô e ele vai desmagnetizar na catraca, obrigando você a enfrentar uma fila de vinte minutos para resolver um problema de dois reais.",
+            "Ao tentar ser prestativo, você vai segurar a porta para alguém que vai passar e nem te olhar na cara, deixando você com cara de bobo e o braço doendo de graça.",
+            "Sua encomenda internacional vai chegar na sua cidade, mas será devolvida ao país de origem porque o carteiro alegou que o seu número de casa 'não existe mais'.",
+            "Você vai preparar um jantar romântico e o alarme de incêndio vai disparar porque você esqueceu o pano de prato perto da chama, destruindo todo o clima e o molho.",
+            "Seu cartão de crédito vai ser bloqueado por 'atividade suspeita' justamente quando você estiver tentando pagar a conta do primeiro encontro em um restaurante caro.",
+            "Você vai mandar um 'eu te amo' para a pessoa errada e a resposta será um emoji de joinha ou um 'quem é você?', acabando com a sua dignidade em segundos.",
+            "Ao tentar economizar luz, você vai tropeçar no pé da mesa no escuro e quebrar o dedinho, gastando o dobro do valor da conta em farmácia e ortopedista.",
+            "Sua chave vai quebrar dentro da fechadura às duas da manhã de uma terça-feira chuvosa, e o chaveiro mais próximo vai cobrar o preço de um rim pelo serviço.",
+            "Você vai descobrir que o seu hálito está terrível apenas depois de ter falado por quinze minutos bem perto do rosto da pessoa que você está tentando conquistar hoje.",
+            "Ao tentar fazer um agachamento na academia, sua calça vai rasgar de fora a fora exatamente na hora em que o ambiente estava em silêncio absoluto e respeitoso.",
+            "Você vai esquecer o nome do seu melhor amigo de infância na hora de apresentá-lo para a sua namorada, criando um clima de desconfiança e amnésia global na mesa.",
+            "Sua bateria do carro vai arriar no meio de um temporal, em uma rua deserta, enquanto o seu celular indica que não há sinal de rede para pedir ajuda de ninguém.",
+            "Você vai tentar dar um 'oi' casual para o seu ex e vai acabar tropeçando no próprio cadarço, caindo de joelhos aos pés dele como se estivesse implorando perdão.",
+            "Ao tentar limpar o ouvido com pressa, você vai deixar o algodão preso lá dentro e terá que ir ao pronto-socorro explicar a sua falta de coordenação motora básica.",
+            "Você vai passar o dia inteiro com um pedaço de alface no dente da frente e ninguém, absolutamente ninguém, terá a decência de te avisar sobre o desastre verde.",
+            "Sua calça vai cair um pouco enquanto você carrega compras pesadas e você terá que escolher entre derrubar os ovos ou mostrar o cofrinho para toda a vizinhança.",
+            "Você vai tentar ser irônico em um grupo de família e sua tia vai levar a sério, iniciando uma discussão política que vai durar três gerações de mágoas e brigas.",
+            "Ao tentar trocar uma lâmpada, você vai perceber que comprou o bocal errado e terá que voltar ao depósito pela terceira vez no mesmo dia de azar e calor.",
+            "Você vai se sentar em um banco de praça e descobrirá, da pior forma possível, que a tinta fresca não era apenas um aviso decorativo colocado ali por capricho.",
+            "Sua mala vai abrir no meio da esteira do aeroporto, espalhando suas roupas íntimas mais velhas e furadas na frente de todos os passageiros do voo internacional.",
+            "Você vai tentar dar uma lição de moral em uma criança e ela vai te responder com uma lógica tão esmagadora que você vai se sentir um completo idiota sem rumo.",
+            "Ao tentar abrir uma garrafa de vinho com um sapato (técnica da internet), você vai quebrar a garrafa, o sapato e ainda manchar a parede branca da sala toda.",
+            "Você vai entrar no carro errado no estacionamento do shopping e só vai perceber quando notar que o bonequinho no painel não é o seu, mas o dono está vindo.",
+            "Sua voz vai falhar no meio de uma frase importante, saindo um som agudo de adolescente em puberdade, destruindo toda a sua autoridade e seriedade no assunto.",
+            "Você vai tentar apagar uma mensagem 'para todos' no WhatsApp e vai clicar em 'apagar para mim', deixando a prova do seu erro lá para sempre para todos verem.",
+            "Ao tentar fazer uma manobra estilosa de bicicleta, você vai cair de cara no gramado e um grupo de adolescentes vai filmar e postar com música de deboche.",
+            "Sua pizza vai chegar sem o recheio porque o entregador deu um grau na moto e tudo grudou na tampa da caixa, deixando apenas a massa triste para você comer.",
+            "Você vai tentar usar um cupom de desconto expirado e a operadora de caixa vai gritar para o gerente: 'ELE ESTÁ TENTANDO USAR O CUPOM VENCIDO DE NOVO!'.",
+            "Ao tentar consertar o chuveiro, você vai esquecer de fechar o registro e vai tomar um banho gelado de roupa e tudo, inundando o banheiro e o corredor da casa.",
+            "Você vai se declarar para a pessoa amada via texto e o corretor ortográfico vai trocar 'você é meu anjo' por 'você é meu alho', estragando todo o romance.",
+            "Sua cadeira de escritório vai quebrar enquanto você está em uma chamada de vídeo com a câmera ligada, fazendo você desaparecer da tela de forma patética e rápida.",
+            "Você vai tentar dar um nó de gravata assistindo tutorial e vai acabar com um nó cego que só sairá com a ajuda de uma tesoura e muita humilhação doméstica.",
+            "Ao tentar lavar o carro, vai começar a chover granito no exato momento em que você terminar de passar a cera, amassando todo o teto e o seu humor também.",
+            "Você vai entrar em um elevador cheio e vai soltar um daqueles espirros que saem com 'brinde' e não terá onde se esconder ou como limpar com classe hoje.",
+            "Sua calça vai prender no pedal da bicicleta e você vai cair lentamente para o lado, como um tronco de árvore podre, na frente de um café lotado de gente.",
+            "Ao tentar tirar uma linha solta da camisa, você vai puxar e desfiar a peça inteira até o peito, transformando sua roupa social em um trapo em segundos.",
+            "Você vai descobrir que a sua conta de luz subiu 300% porque você deixou o ar-condicionado ligado no modo 'gelo polar' em um quarto que você nem usa.",
+            "Ao tentar fazer um comentário inteligente sobre vinhos, você vai confundir a uva com o nome de uma doença e todos na mesa vão te olhar com muita pena.",
+            "Sua meia vai escorregar para dentro do sapato a cada cinco passos e você terá que parar no meio da calçada movimentada para arrumar a situação irritante.",
+            "Você vai tentar ser fofo com um cachorro na rua e ele vai rosnar para você como se você fosse a personificação do mal absoluto na terra hoje.",
+            "Sua rede social vai sugerir como 'amigo' justamente aquela pessoa que você bloqueou por motivos de saúde mental e ódio profundo há cinco anos.",
+            "Ao tentar fazer uma receita de internet, você vai confundir sal com açúcar e o seu bolo vai virar uma massa salgada e intragável que ninguém vai comer.",
+            "Você vai passar o protetor solar de forma errada e vai ficar com marcas de mãos brancas nas costas, parecendo que foi atacado por um fantasma na praia.",
+            "Sua calça vai descosturar no bumbum justamente quando você se abaixar para pegar uma moeda de dez centavos que você nem precisava tanto assim hoje.",
+            "Você vai tentar impressionar alguém falando outra língua e vai acabar falando um palavrão horrível sem saber, sendo expulso do local imediatamente.",
+            "Ao tentar abrir uma embalagem de ketchup com os dentes, o sachê vai explodir e você vai ficar parecendo uma vítima de filme de terror barato e trash.",
+            "Sua impressora vai decidir imprimir cem páginas de caracteres aleatórios e você não vai conseguir cancelar, vendo seu papel e tinta irem para o lixo.",
+            "Você vai tentar entrar em uma porta de 'puxe' empurrando com toda a força e vai quase quebrar o nariz enquanto uma criança ri da sua cara de bobo.",
+            "Sua bateria do notebook vai acabar no exato segundo em que você ia clicar em 'enviar' para o trabalho que vale a sua nota final ou o seu emprego.",
+            "Ao tentar fazer uma graça para uma criança, você vai bater a cabeça na quina do armário e vai ter que conter o choro para não perder a postura de adulto.",
+            "Você vai descobrir que o seu microfone estava ligado durante toda a fofoca que você fez sobre a pessoa que estava coordenando a reunião online agora.",
+            "Sua calça vai enroscar na maçaneta da porta e você vai ser puxado de volta com força, quase caindo e rasgando o bolso da frente de forma violenta.",
+            "Ao tentar dar um tchau para alguém, você vai perceber que a pessoa não estava acenando para você, mas para alguém atrás, e você vai ter que disfarçar.",
+            "Você vai tentar usar um provador de loja e vai descobrir que a cortina não fecha direito, ficando exposto para todo o corredor do shopping movimentado.",
+            "Sua bateria do celular vai chegar em 1% e você vai começar uma corrida desesperada pela casa atrás do cabo, tropeçando em tudo o que encontrar no caminho.",
+            "Ao tentar limpar o óculos com a camisa, você vai riscar a lente de forma definitiva porque a camisa tinha um grão de areia perdido ali no tecido sujo.",
+            "Você vai tentar fazer um discurso emocionante em um aniversário e vai esquecer o nome do aniversariante no meio da frase principal e mais bonita de todas.",
+            "Sua calça vai molhar inteira porque você não percebeu que a cadeira do bar estava cheia de cerveja derramada pelo cliente anterior que já foi embora.",
+            "Ao tentar ser radical, você vai pular um muro baixo e vai prender a calça no prego, ficando pendurado como um saco de batatas até alguém te ajudar.",
+            "Você vai descobrir que o seu fone de ouvido não estava conectado e que todo o escritório ouviu o seu gosto musical duvidoso por dez minutos inteiros.",
+            "Sua bateria da chave do carro vai acabar no meio de um estacionamento gigante e você terá que descobrir como abrir o carro no modo manual e antigo.",
+            "Ao tentar fazer uma omelete, você vai deixar cair um pedaço grande de casca de ovo e vai passar dez minutos tentando caçar o pedaço com o garfo sujo.",
+            "Você vai mandar uma foto íntima para o grupo da igreja ou do trabalho por puro erro de clique e não vai conseguir apagar a tempo da visualização.",
+            "Sua calça vai estar com a etiqueta para fora e você vai passar o dia ouvindo as pessoas perguntarem se você acabou de comprar a roupa na promoção.",
+            "Ao tentar usar um banheiro público, você vai descobrir que não tem papel apenas depois de já ter terminado o serviço e não ter ninguém por perto.",
+            "Você vai tentar fazer uma pose de foto e vai sentir uma cãibra insuportável na panturrilha, tendo que ser carregado para fora da cena com muita dor.",
+            "Sua bateria do relógio vai parar e você vai chegar duas horas atrasado para um compromisso que era a chance da sua vida de mudar de patamar hoje.",
+            "Ao tentar limpar uma mancha na mesa, você vai usar um produto que vai remover o verniz do móvel, criando uma mancha branca e feia permanente ali.",
+            "Você vai tentar fazer um elogio para a comida de alguém e a pessoa vai dizer: 'eu não cozinhei nada, isso é comprado', gerando um clima de tédio.",
+            "Sua calça vai ficar presa na escada rolante e você vai ter que tirar o sapato correndo para não ser engolido pela máquina na frente de todo mundo.",
+            "Ao tentar assobiar para chamar alguém, vai sair apenas um jato de cuspe e nenhum som, deixando você com uma cara de tonto e a pessoa confusa.",
+            "Você vai descobrir que a sua calça está do avesso apenas quando chegar no trabalho e alguém apontar para a costura interna aparecendo na perna.",
+            "Sua bateria do mouse vai acabar no meio de um jogo online importante e você vai ser derrotado por um iniciante enquanto tenta trocar as pilhas."
+        ],
+        consequencias: [
+            "O resultado será uma humilhação tão nítida que poderá ser sentida pelos seus descendentes até a terceira geração de forma bem clara.",
+            "O universo fará uma edição especial com música de circo e câmera lenta para todas as redes sociais alheias rirem da sua cara.",
+            "No fim, sobrará apenas o cheiro de café queimado e a sensação de ser a piada interna favorita de todas as galáxias vizinhas agora.",
+            "A dignidade será um acessório caro demais para seu orçamento atual, restando apenas fingir demência total e completa hoje.",
+            "O golpe final no seu ego virá quando perceber que até o seu anjo da guarda te bloqueou em todas as instâncias astrais e físicas.",
+            "Você terminará o dia abraçado à sua própria frustração, assistindo a comerciais que parecem narrar seus fracassos em rede nacional.",
+            "A conclusão lógica é que seu karma não aceita suborno e tem uma fixação doentia pela sua incapacidade de reagir a qualquer coisa.",
+            "O fundo do poço terá um alçapão secreto que leva diretamente a um porão ainda mais úmido, sem Wi-Fi e cheio de mofo e tédio.",
+            "Sua crise existencial será tão profunda que você questionará se a gravidade só funciona contra você na queda livre da sua vida.",
+            "O destino te dará um vácuo de três encarnações seguidas, provando que nem o além tem paciência para sua lentidão mental e física.",
+            "Sua reputação será comparada a um boleto vencido: ninguém quer ver, ninguém quer pagar e todos querem que desapareça da frente.",
+            "No final do dia, você descobrirá que o 'sentido da vida' para você hoje é apenas um erro de digitação no grande livro do destino.",
+            "O universo vai te dar um 'visto por último' e nunca mais vai responder às suas súplicas por sorte, dinheiro ou amor verdadeiro hoje.",
+            "Sua trajetória termina com você tentando explicar o inexplicável para alguém que já desistiu de tentar te entender há muito tempo.",
+            "O resultado será uma coleção de momentos embaraçosos que seu cérebro vai fazer questão de reprisar toda vez que você tentar dormir.",
+            "Você vai se sentir como um anexo esquecido em um e-mail de despedida: irrelevante, ignorado e fadado à lixeira digital eterna agora.",
+            "No desfecho desta ópera trágica, o público vai aplaudir de pé, mas apenas porque a sua vergonha finalmente chegou ao fim por hoje.",
+            "A única coisa que você vai colher hoje será a certeza de que a lei da semeadura funciona, mas o seu solo é totalmente infértil e seco.",
+            "Sua vida hoje é a prova de que o azar é uma ciência exata e que você é a cobaia favorita do laboratório cósmico de desastres.",
+            "O final será você sentado no sofá, olhando para o teto e perguntando 'por que eu?', enquanto o teto apenas te responde com uma goteira.",
+            "Você vai terminar o dia com a sensação de que foi atropelado por um caminhão de sorvete: é doce, é colorido, mas ainda dói muito.",
+            "Sua dignidade será reduzida a um meme de baixa qualidade que circula em grupos de família como exemplo do que não fazer na vida.",
+            "O resultado final será você tentando convencer a si mesmo de que 'amanhã será melhor', sabendo que essa é a maior mentira do ano.",
+            "No fim, você é apenas um detalhe irrelevante em uma foto de alguém muito mais bem-sucedido e feliz que você, que apareceu de relance.",
+            "Sua trajetória hoje termina com um 'game over' sonoro que pode ser ouvido por todos os vizinhos, acompanhado por uma luz vermelha.",
+            "A conclusão é que você é o mestre em transformar oportunidades de ouro em montanhas de chumbo derretido e sem valor comercial algum.",
+            "Sua sorte hoje foi como um wi-fi que conecta mas não navega, te deixando no limbo da esperança inútil e do tédio absoluto agora.",
+            "No final, sobrará apenas o eco da sua própria desculpa esfarrapada ricocheteando nas paredes vazias da sua consciência pesada hoje.",
+            "Você terminou o dia sendo o protagonista de um documentário sobre 'como não viver', que será exibido em escolas como alerta máximo.",
+            "Sua vida hoje foi um grande 'erro de digitação' cósmico que resultou em uma frase sem sentido e sem pontuação correta no final.",
+            "O desfecho será você tentando dormir e o seu cérebro lembrando daquela vez em 2012 que você disse algo idiota para o seu chefe.",
+            "No final das contas, você é apenas um figurante que morreu na primeira cena de um filme de ação que ninguém vai assistir ou lembrar.",
+            "Sua reputação hoje foi comparada a um iogurte vencido: parece normal por fora, mas por dentro é uma bomba de decepção e azedume.",
+            "O resultado final será você conferindo a sua conta bancária e percebendo que o seu saldo é proporcional ao seu nível de sorte hoje: zero.",
+            "No desfecho, você descobriu que o seu talento secreto é atrair problemas que nem a física quântica consegue explicar a origem real.",
+            "Sua trajetória hoje termina com um esbarrão em uma porta de vidro tão limpa que você achou que era o caminho para a liberdade total.",
+            "O resultado será você tentando sorrir para a vida e a vida te respondendo com um bocejo de tédio profundo e uma olhada no relógio.",
+            "No final, você percebeu que a sua intuição é como um GPS desatualizado: ela te leva para o lugar certo, mas cinco anos atrasada.",
+            "Sua sorte hoje foi como um café que veio sem açúcar e sem pó, apenas água quente com um gosto residual de decepção e amargura.",
+            "O desfecho será você tentando justificar o injustificável para uma plateia de gatos de rua que claramente não estão nem aí para você.",
+            "Sua reputação hoje foi reduzida a um comentário apagado em um fórum de internet por ser considerado 'triste demais' para os padrões.",
+            "No final, você descobriu que o segredo do sucesso é a persistência, mas a sua persistência é o que está te mantendo nesse buraco fundo.",
+            "Sua trajetória termina com você percebendo que a única pessoa que riu das suas piadas hoje foi o seu próprio eco no banheiro vazio.",
+            "O resultado será uma coleção de 'quases' que vão alimentar a sua melancolia de final de tarde e te fazer questionar tudo de novo.",
+            "Sua sorte hoje foi como um bilhete de metrô que desmagnetizou justamente quando você estava com mais pressa para chegar no trabalho.",
+            "No desfecho, você percebeu que a sua vida é um erro de sistema que o universo esqueceu de corrigir na última atualização de software.",
+            "Sua trajetória termina com um suspiro de alívio do seu anjo da guarda, que finalmente pode ir dormir sem ter que te salvar de novo.",
+            "O resultado final será você deitado na cama, olhando para o celular e esperando uma mensagem que você sabe que nunca vai chegar hoje.",
+            "Sua sorte hoje foi como um fósforo úmido: você riscou, riscou, sentiu o cheiro do enxofre, mas a chama nunca apareceu para te aquecer.",
+            "No final, você é a prova de que a teimosia pode te levar a lugares incríveis, como por exemplo, o meio de um deserto sem água e sinal.",
+            "Sua reputação hoje foi comparada a uma nota de três reais: totalmente inexistente e motivo de piada para quem entende de valores reais.",
+            "O desfecho será você tentando dormir e percebendo que esqueceu de fazer a única coisa realmente importante que você tinha anotado hoje.",
+            "A única coisa que você conseguiu hoje foi uma coleção de olhares de julgamento que você vai levar para o túmulo como medalhas de honra.",
+            "Você terminou o dia sendo a prova viva de que o azar é uma força da natureza tão real quanto a gravidade, e ela te ama hoje.",
+            "Sua sorte hoje foi como uma bateria de celular que morre justamente quando você ia tirar a foto do seu prato de comida maravilhoso.",
+            "O resultado final será você fechando os olhos e ouvindo o som da sua própria respiração, que hoje parece estar cansada de te carregar.",
+            "Sua reputação hoje foi comparada a uma nota de um dólar rasgada e colada com fita durex: você até pode usar, mas corre o risco total.",
+            "No final, você descobriu que o segredo da sabedoria é o silêncio, mas você decidiu que hoje era o dia de ser o palestrante da asneira.",
+            "Sua trajetória termina com um suspiro de alívio do seu próprio anjo da guarda, que não vê a hora de você dormir para ele descansar.",
+            "Você percebeu que a sua vida é um erro de cálculo que gerou um resultado bizarro e inexplicável para todos os matemáticos do mundo.",
+            "Sua sorte hoje foi como um cupom de desconto que só vale para compras em lojas físicas que ficam dentro de aeroportos em outros países.",
+            "O resultado será uma coleção de 'quases' que vão alimentar a sua melancolia de final de tarde e te fazer questionar o sentido de tudo.",
+            "No final das contas, você é o dono da verdade em um cemitério, onde ninguém vai te contestar, mas também ninguém vai te dar parabéns.",
+            "Sua dignidade agora é como um adesivo que perdeu a cola: se você tentar grudar ela de novo, ela vai cair na primeira brisa que passar.",
+            "A conclusão da sua saga hoje é que você é um mestre em dar voltas em torno do próprio eixo, achando que está caminhando para o futuro.",
+            "Sua sorte hoje foi como um fósforo que você acende e ele solta uma fagulha que queima o seu tapete de estimação, criando um buraco.",
+            "O universo te deu um presente de grego, mas o problema é que o cavalo de madeira veio cheio de cupins que agora comem a sua mente.",
+            "Sua vida hoje foi uma sucessão de 'momentos de brilho' que na verdade eram apenas o reflexo do sol em uma lata de lixo vazia na rua.",
+            "O desfecho será você tentando justificar os seus erros para uma plateia de uma pessoa só: você mesmo, que já não acredita em nada.",
+            "Sua sorte hoje foi como um par de sapatos que aperta tanto o calcanhar que você termina o dia mancando e com uma cara de dor intensa.",
+            "O resultado final será você deitado na cama, percebendo que o universo não está nem aí para os seus dramas, ele só quer que você pague.",
+            "Sua reputação hoje foi reduzida a um comentário apagado em um fórum de internet por ter sido considerado 'baixo nível demais' para o site.",
+            "No final, você percebeu que a sua vida é um livro de colorir onde você usou apenas a cor preta em todas as páginas e agora reclama.",
+            "Sua trajetória termina com um esbarrão em uma mesa de café, derrubando o açúcar, o leite e a sua última gota de paciência no chão sujo.",
+            "Você descobriu que a sua intuição é como um radar que só detecta problemas quando eles já estão em cima de você e não há mais tempo.",
+            "Sua sorte hoje foi como um fósforo que você acende, ele parece que vai durar, mas um suspiro de tédio da pessoa ao lado o apaga agora.",
+            "O resultado será você conferindo a sua conta de rede social e percebendo que o seu post 'profundo' não teve nem a curtida da sua mãe.",
+            "No final das contas, você descobriu que o fundo do poço é o único lugar onde você pode ter certeza que ninguém vai tentar te derrubar.",
+            "Sua trajetória termina com você tentando abrir uma porta que diz 'puxe' enquanto você empurra com toda a força da sua frustração hoje.",
+            "O resultado final será você percebendo que o seu grande plano para hoje foi apenas uma forma complicada de perder tempo e dinheiro vivo.",
+            "Sua sorte hoje foi como um wi-fi gratuito que pede todos os seus dados e depois diz que a conexão falhou por tempo excedido de espera.",
+            "No desfecho, você descobriu que a sua vida é uma sucessão de comerciais de produtos que você não pode comprar e que não funcionam bem.",
+            "Sua trajetória termina com você olhando para o céu e pedindo um sinal, e recebendo apenas um pingo de chuva gelada direto no seu olho.",
+            "O resultado será uma coleção de prints de conversas que você nunca deveria ter tido e que agora são a prova do seu crime contra a lógica.",
+            "No final, você percebeu que a sua vida é um filme que foi dublado em outra língua e o áudio está com três segundos de atraso da imagem.",
+            "Sua sorte hoje foi como um café que veio tão quente que queimou a sua língua no primeiro gole e você não sentiu o gosto de mais nada.",
+            "O desfecho será você tentando dormir e percebendo que esqueceu de fazer a única coisa realmente importante que você tinha anotado hoje.",
+            "A única coisa que você conseguiu hoje foi uma coleção de olhares de julgamento que você vai levar para o túmulo como medalhas de honra.",
+            "Você terminou o dia sendo a prova viva de que o azar é uma força da natureza tão real quanto a gravidade, e ela tem uma queda por você.",
+            "Sua sorte hoje foi como uma bateria de celular que morre justamente quando você ia bater a foto do seu prato de comida maravilhoso hoje.",
+            "O resultado final será você fechando os olhos e ouvindo o som da sua própria respiração, que hoje parece estar cansada de te carregar.",
+            "Sua reputação hoje foi comparada a uma nota de um dólar rasgada e colada com fita durex: você até pode tentar usar, mas o risco é seu.",
+            "No final, você descobriu que o segredo da sabedoria é o silêncio, mas você decidiu que hoje era o dia de ser o palestrante da asneira.",
+            "Sua trajetória termina com um suspiro de alívio do seu próprio anjo da guarda, que não vê a hora de você dormir para ele poder sair.",
+            "Você percebeu que a sua vida é um erro de cálculo que gerou um resultado bizarro e inexplicável para todos os matemáticos do mundo hoje.",
+            "Sua sorte hoje foi como um cupom de desconto que só vale para compras em lojas físicas que ficam dentro de aeroportos em países distantes.",
+            "O resultado será uma coleção de 'quases' que vão alimentar a sua melancolia de final de tarde e te fazer questionar o sentido de tudo.",
+            "No final das contas, você é o dono da verdade em um cemitério, onde ninguém vai te contestar, mas também ninguém vai te dar os parabéns.",
+            "Sua dignidade agora é como um adesivo que perdeu a cola: se você tentar grudar ela de novo, ela vai cair na primeira brisa de realidade.",
+            "A conclusão da sua saga hoje é que você é um mestre em dar voltas em torno do próprio eixo, achando que está caminhando para o futuro.",
+            "Sua sorte hoje foi como um fósforo que você acende e ele solta uma fagulha que queima o seu tapete de estimação, criando um buraco eterno."
+        ],
+        avisos: [
+            "🚩 AVISO: Se sentir um lampejo de esperança hoje, ignore-o. É apenas seu cérebro te enganando antes da decepção final e inevitável agora.",
+            "🚩 NOTA: Seu carma hoje foi faturado com juros abusivos. Não há possibilidade de estorno ou parcelamento para decisões tomadas por preguiça.",
+            "🚩 ALERTA: Evite espelhos hoje. A verdade refletida neles pode causar danos permanentes à sua autoestima já debilitada e sofrida demais.",
+            "🚩 LEMBRETE: O fato de você ter limite no cartão não significa que deve comprar o amor que claramente não recebe de ninguém nesta vida.",
+            "🚩 SEGURANÇA: Não confie na sua própria sombra hoje. Se nem ela fica com você na escuridão, imagine o resto do mundo e das pessoas agora.",
+            "🚩 FISCAL: O imposto sobre o seu otimismo desnecessário será cobrado em forma de novos boletos surpresa via e-mail ou por baixo da porta.",
+            "🚩 SAÚDE: Seu nível de sarcasmo está tóxico; evite contato com pessoas sensíveis, crianças, animais de pequeno porte ou plantas jovens hoje.",
+            "🚩 METEOROLOGIA: Previsão de tempestade de cobranças com ventos fortes de arrependimento vindos diretamente do seu passado mal resolvido.",
+            "🚩 JURÍDICO: O Mestre nega qualquer envolvimento com o resultado da sua aposta errada ou com a sua falta de sorte persistente e irritante.",
+            "🚩 TÉCNICO: Se sua vida fosse um computador, o técnico recomendaria jogar fora e comprar um modelo novo que realmente funcione de verdade.",
+            "🚩 AVISO: Mantenha as expectativas no subsolo para evitar a queda. O universo está de mau humor hoje e você é o alvo principal e favorito.",
+            "🚩 NOTA: O silêncio é seu melhor amigo hoje. Toda vez que você abrir a boca, a sua cota de vergonha alheia será renovada automaticamente.",
+            "🚩 ALERTA: Não tente ser multitarefa hoje. Você mal está conseguindo manter a coordenação motora para caminhar e respirar ao mesmo tempo.",
+            "🚩 LEMBRETE: A pressa é a inimiga da perfeição e a melhor amiga do seu próximo erro catastrófico que será postado nas redes sociais logo.",
+            "🚩 SEGURANÇA: Se você acha que está sendo seguido, é apenas o seu carma tentando te entregar uma intimação judicial por erros do passado.",
+            "🚩 FISCAL: Sua cota de desculpas para este mês foi excedida. Por favor, comece a assumir a culpa pelos seus próprios desastres agora mesmo.",
+            "🚩 SAÚDE: O estresse de hoje pode causar calvície precoce ou tiques nervosos que vão durar até a próxima lua cheia de azar e desespero.",
+            "🚩 METEOROLOGIA: Frente fria de indiferença emocional se aproximando. Recomenda-se o uso de casacos de sarcasmo e mantas de puro desprezo.",
+            "🚩 JURÍDICO: Ao ler este horóscopo, você concorda que o azar é uma cláusula pétrea do seu destino e que não cabe recurso em nenhuma instância.",
+            "🚩 TÉCNICO: Sua bateria social está em 1%. Evite interações com humanos, robôs ou atendentes de telemarketing para não explodir de raiva.",
+            "🚩 AVISO: Se a vida te der limões hoje, prepare-se, porque ela vai espremer todos direto no seu olho que já está vermelho de tanto chorar.",
+            "🚩 NOTA: O universo não te deve nada, mas parece que você deve muito para o universo, e a cobrança será feita em forma de tédio absoluto.",
+            "🚩 ALERTA: Perigo de queda de autoestima em áreas residenciais e comerciais. Mantenha-se protegido por uma camada espessa de cinismo hoje.",
+            "🚩 LEMBRETE: Nada é tão ruim que não possa piorar com a sua ajuda e com a sua incrível capacidade de tomar a decisão errada na hora h.",
+            "🚩 SEGURANÇA: Evite decisões importantes enquanto estiver com fome ou com sono. No seu caso, evite decisões importantes de forma permanente.",
+            "🚩 FISCAL: O seu nível de produtividade hoje será auditado e o resultado será uma multa pesada em forma de horas extras não remuneradas.",
+            "🚩 SAÚDE: Risco de irritação cutânea ao entrar em contato com pessoas muito felizes ou que postam frases motivacionais de manhã cedo hoje.",
+            "🚩 METEOROLOGIA: Possibilidade de chuva de granizo emocional. Proteja o seu coração com uma armadura de gelo e o seu cérebro com tédio.",
+            "🚩 JURÍDICO: O destino não se responsabiliza por objetos perdidos, dignidades feridas ou corações partidos por pura falta de noção básica.",
+            "🚩 TÉCNICO: O seu sistema operacional de bom senso foi corrompido. Por favor, reinicie a sua mente e apague os arquivos de teimosia pura.",
+            "🚩 AVISO: Não confie em ninguém que sorria demais antes do café. Eles provavelmente estão tramando algo contra a sua parca estabilidade mental.",
+            "🚩 NOTA: Sua sorte é como um sinal de Wi-Fi aberto: todo mundo usa, mas quando você precisa, a conexão cai e te deixa na mão e no escuro.",
+            "🚩 ALERTA: Se o seu ex te mandar mensagem, bloqueie. O universo está apenas testando a sua capacidade de não ser idiota pela décima vez hoje.",
+            "🚩 LEMBRETE: Você não é um herói de filme, você é apenas o cara que limpa a bagunça depois que a cena de ação terminou e o brilho sumiu.",
+            "🚩 SEGURANÇA: Mantenha os seus segredos guardados a sete chaves. Suas paredes têm ouvidos e eles adoram uma fofoca bem destrutiva e feia.",
+            "🚩 FISCAL: O imposto sobre a sua teimosia será cobrado em forma de tempo perdido em filas de espera que não levam a lugar nenhum de fato.",
+            "🚩 SAÚDE: O cansaço que você sente não é físico, é a sua alma tentando se desvincular de um corpo que só toma decisões erradas e burras.",
+            "🚩 METEOROLOGIA: Nublado com chances de 100% de arrependimento ao olhar as fotos que você tirou ontem à noite durante a sua bebedeira chata.",
+            "🚩 JURÍDICO: Todas as reclamações sobre a sua vida devem ser enviadas para o setor de 'não estamos nem aí', localizado no vácuo espacial.",
+            "🚩 TÉCNICO: Seus drivers de simpatia estão desatualizados. As pessoas ao seu redor estão vendo apenas uma tela preta de má vontade hoje.",
+            "🚩 AVISO: O sucesso é uma jornada, mas a sua jornada parece estar sendo feita em um carrinho de supermercado com a roda travada e o chão sujo.",
+            "🚩 NOTA: O amanhã é um novo dia para você cometer os mesmos erros, mas com uma desculpa diferente e uma cara de pau ainda mais refinada.",
+            "🚩 ALERTA: Não tente ser o centro das atenções hoje; o centro das atenções hoje é um acidente de trânsito e você não quer ser comparado.",
+            "🚩 LEMBRETE: O dinheiro não traz felicidade, mas a falta dele traz uma tristeza que combina perfeitamente com a sua cara de quem não dorme.",
+            "🚩 SEGURANÇA: Se você ouvir um barulho estranho vindo do seu futuro, é apenas a realidade batendo na porta para cobrar os juros devidos.",
+            "🚩 FISCAL: O imposto sobre a sua falta de noção foi retido na fonte, o que explica por que você está se sentindo tão vazio e sem ideia hoje.",
+            "🚩 SAÚDE: Beber água não resolve os seus problemas emocionais, mas pelo menos você estará hidratado enquanto chora pelos cantos da sua casa.",
+            "🚩 METEOROLOGIA: Previsão de ventos fortes de mudança que vão levar embora o pouco que restava da sua paciência com as pessoas burras hoje.",
+            "🚩 JURÍDICO: Este documento não tem valor legal, assim como as suas promessas de que 'segunda-feira eu começo a dieta e a ser uma pessoa melhor'.",
+            "🚩 TÉCNICO: A sua conexão com a realidade está instável. Tente se aproximar de pessoas que não acreditam em tudo o que você diz por educação.",
+            "🚩 FINANCEIRO: Poupar dinheiro é importante, mas poupar a paciência dos outros é fundamental para que você não termine o dia falando sozinho.",
+            "🚩 SOCIAL: Se o telefone não toca, é o sinal mais claro de que o mundo está em paz com a sua ausência e que ninguém sente a sua falta agora.",
+            "🚩 QUÂNTICO: O seu sucesso existe em um universo paralelo onde você tomou todas as decisões certas que aqui você resolveu ignorar de vez.",
+            "🚩 ASTRAL: Saturno mandou avisar que o seu carma é do tipo 'express', o que significa que o que você fizer de errado hoje, voltará logo.",
+            "🚩 ESPIRITUAL: O incenso que você acendeu não limpou a energia da casa, apenas deixou tudo com cheiro de loja de produtos esotéricos barata.",
+            "🚩 EXISTENCIAL: Você é o autor da sua própria história, mas parece que você está escrevendo um manual de como falhar com estilo e persistência.",
+            "🚩 COMERCIAL: Este conselho tem validade de cinco minutos. Após esse tempo, ele se transformará em um arrependimento amargo e difícil de digerir.",
+            "🚩 URGENTE: Se o seu vizinho sorrir para você hoje, desconfie. Ele provavelmente já sabe da fofoca que você tentou esconder de todo mundo.",
+            "🚩 CÓSMICO: O alinhamento dos planetas hoje favorece a introspecção, o que é um nome chique para 'ficar em casa chorando e comendo sorvete'.",
+            "🚩 FINAL: Se tudo mais falhar, tente a tática da avestruz: enfie a cabeça na terra e espere o mundo acabar. Pelo menos o silêncio é certo.",
+            "🚩 AVISO: A sua intuição hoje está com o fusível queimado. Se ela te disser 'vai que dá', mude de direção e corra para o lado oposto agora.",
+            "🚩 NOTA: O universo não está rindo de você, ele está apenas usando a sua vida como um exemplo de 'o que evitar' em todas as outras galáxias.",
+            "🚩 ALERTA: Perigo de combustão espontânea de paciência em ambientes com mais de duas pessoas falando sobre política ou futebol de várzea.",
+            "🚩 LEMBRETE: Ser você mesmo é um ótimo conselho para quem é interessante. Para você, talvez seja melhor tentar ser outra pessoa hoje cedo.",
+            "🚩 SEGURANÇA: Se a porta estiver aberta, não entre. É uma armadilha do destino para te fazer limpar a bagunça de alguém que você nem gosta.",
+            "🚩 FISCAL: O seu nível de sarcasmo será taxado em 50% hoje. Recomenda-se o uso de frases neutras para evitar a falência social completa.",
+            "🚩 SAÚDE: Risco de torcicolo ao tentar olhar para o próprio umbigo por tempo demais em busca de uma resposta que não está lá dentro hoje.",
+            "🚩 METEOROLOGIA: Pancadas de realidade isoladas durante a tarde, seguidas de uma noite de reflexões inúteis e um pouco de insônia chata.",
+            "🚩 JURÍDICO: Você tem o direito de permanecer em silêncio, mas sabemos que você não tem a capacidade de usar esse direito a seu favor hoje.",
+            "🚩 TÉCNICO: O seu GPS moral está recalculando a rota desde 1998. Talvez seja hora de aceitar que você está perdido e pedir ajuda agora.",
+            "🚩 FINANCEIRO: O seu investimento em 'autoajuda' deu prejuízo; a única pessoa que ficou melhor com o seu dinheiro foi o autor do livro hoje.",
+            "🚩 SOCIAL: Se as pessoas estão se afastando de você no metrô, não é por causa do seu perfume, é por causa da nuvem negra de azar na cabeça.",
+            "🚩 QUÂNTICO: O seu sucesso é uma variável oculta que o universo resolveu esconder tão bem que nem a física quântica consegue localizar hoje.",
+            "🚩 ASTRAL: Júpiter mandou avisar que a sua expansão hoje será apenas na região abdominal, graças ao excesso de comida para afogar mágoas.",
+            "🚩 ESPIRITUAL: O seu guia espiritual foi visto em um bar, bebendo para esquecer que o trabalho dele é te orientar em meio a tantas decisões.",
+            "🚩 EXISTENCIAL: O vácuo existencial hoje está tão grande que você corre o risco de ser sugado pelo próprio umbigo se continuar se olhando.",
+            "🚩 COMERCIAL: Este conselho é uma oferta por tempo limitado: aceite que você está errado agora e ganhe o direito de não passar vergonha hoje.",
+            "🚩 URGENTE: Se o telefone tocar e for a sua mãe, atenda. Ela é a única pessoa que ainda acredita que você tem salvação, embora tenha dúvidas.",
+            "🚩 CÓSMICO: A Via Láctea hoje parece uma estrada cheia de buracos e pedágios caros, e você está dirigindo um carro com o pneu furado agora.",
+            "🚩 FINAL: Lembre-se que se tudo der errado, você sempre pode começar de novo amanhã. O problema é que o azar também tem essa filosofia.",
+            "🚩 AVISO: Se você acha que o pior já passou, parabéns pelo otimismo, mas o universo ainda tem um terceiro ato preparado para a sua vergonha.",
+            "🚩 NOTA: A sua cota de desculpas esfarrapadas para faltar ao compromisso de hoje foi negada pelo comitê central do bom senso e da ética.",
+            "🚩 ALERTA: Cuidado ao dar a sua opinião hoje; ela tem o peso de uma pluma e a utilidade de um guarda-chuva de papel em meio ao furacão.",
+            "🚩 LEMBRETE: O universo não está contra você, ele apenas te usa como exemplo de 'o que não fazer' nas reuniões de planejamento astral hoje.",
+            "🚩 SEGURANÇA: Se você sentir que alguém está te observando, não se preocupe: é apenas o seu carma tirando fotos para o dossiê final de erros.",
+            "🚩 FISCAL: O imposto sobre a sua falta de timing será cobrado em forma de piadas que ninguém entende e silêncios constrangedores na mesa.",
+            "🚩 SAÚDE: O seu nível de estresse hoje é suficiente para acender uma cidade inteira, mas infelizmente só serve para te dar uma azia terrível.",
+            "🚩 METEOROLOGIA: Previsão de chuva de boletos com ventos fortes de cobrança vindos do setor financeiro da sua própria consciência pesada.",
+            "🚩 JURÍDICO: Você é culpado até que se prove o contrário, e mesmo assim, o juiz astral não vai com a sua cara e vai te condenar ao tédio.",
+            "🚩 TÉCNICO: O seu driver de paciência parou de responder. Por favor, não force o sistema ou você terá um colapso nervoso na frente de todos.",
+            "🚩 FINANCEIRO: O seu saldo emocional está no vermelho, e o banco do destino já avisou que não vai aumentar o seu limite de tolerância hoje.",
+            "🚩 SOCIAL: Se você for convidado para uma festa, vá apenas para comer. Ninguém está interessado nas suas histórias de fracasso e azar.",
+            "🚩 QUÂNTICO: Em algum universo paralelo, você é uma pessoa brilhante e de sucesso. Mas neste aqui, você é apenas o cara que tropeça no ar.",
+            "🚩 ASTRAL: Marte indica que a sua única vitória hoje será conseguir abrir um pote de conserva sem pedir ajuda para o seu vizinho mais forte.",
+            "🚩 ESPIRITUAL: O seu anjo da guarda pediu um aumento de periculosidade para continuar cuidando de alguém que se mete em tantas frias hoje.",
+            "🚩 EXISTENCIAL: A vida é uma peça de teatro onde você esqueceu as falas, perdeu o figurino e o cenário está começando a cair na sua cabeça.",
+            "🚩 COMERCIAL: Este conselho não aceita devolução. Se você não gostou da verdade, o problema é inteiramente seu e da sua falta de sorte.",
+            "🚩 URGENTE: Se você encontrar uma nota de dinheiro na rua hoje, desconfie: ela provavelmente é falsa ou está amaldiçoada pelo seu próprio azar.",
+            "🚩 CÓSMICO: O buraco negro mais próximo está mandando sinais de que a sua vida é a única coisa mais vazia e sem luz que ele já detectou hoje.",
+            "🚩 FINAL: Se nada der certo hoje, durma. Pelo menos nos seus sonhos você pode fingir que é uma pessoa normal e que o universo te ama."
+        ]
+    };
+
+    function comutarDestino() {
+        const sel = document.getElementById('signo');
+        const emoji = sel.value;
+        const nomeSigno = sel.options[sel.selectedIndex].text;
+
+        const i = db.intros[Math.floor(Math.random() * db.intros.length)];
+        const d = db.desenvolvimentos[Math.floor(Math.random() * db.desenvolvimentos.length)];
+        const c = db.consequencias[Math.floor(Math.random() * db.consequencias.length)];
+        const a = db.avisos[Math.floor(Math.random() * db.avisos.length)];
+
+        const titulo = `${emoji} ${nomeSigno.toUpperCase()} - Horóscopo do dia`;
+        const corpo = `${i}\n${d}\n${c}`;
+        const aviso = a;
+
+        document.getElementById('out-titulo').innerHTML = titulo;
+        document.getElementById('out-corpo').innerHTML = corpo;
+        document.getElementById('out-aviso').innerHTML = aviso;
+        document.getElementById('resultado').style.display = 'block';
+
+        // --- ALTERAÇÃO: FUNÇÃO DE CÓPIA AUTOMÁTICA ---
+        const textoParaCopiar = `${titulo}\n\n${corpo}\n\n${aviso}\n\nElaborado por Prof. Karma Jurus • 2026 • Todos os Erros Reservados`;
+        navigator.clipboard.writeText(textoParaCopiar).then(() => {
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }).catch(err => {
+            console.error('Erro ao copiar: ', err);
+        });
+    }
+</script>
+
+</body>
+</html>
